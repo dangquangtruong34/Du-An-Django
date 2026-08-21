@@ -9,9 +9,14 @@ class Country(models.Model):
 
 
 class CustomUser(AbstractUser):
+    avatar = models.ImageField(
+        upload_to='avatars/',
+        null=True,
+        blank=False
+    )
     country = models.ForeignKey(
         Country,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=False
     )
