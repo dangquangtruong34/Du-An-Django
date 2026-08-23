@@ -103,9 +103,23 @@
               <li>
                 <a href="cart.html"><i class="fa fa-shopping-cart"></i> Cart</a>
               </li>
+              {% if user.is_authenticated %}
               <li>
-                <a href="login.html"><i class="fa fa-lock"></i> Login</a>
+                <a href="{% url 'custom_logout' %}">
+                  <i class="fa fa-user"></i>
+                  Xin chào: {{ user.username }} | Logout
+                </a>
               </li>
+              {% else %}
+
+              <li>
+                <a href="{% url 'user_login' %}">
+                  <i class="fa fa-lock"></i>
+                  Login
+                </a>
+              </li>
+
+              {% endif %}
             </ul>
           </div>
         </div>

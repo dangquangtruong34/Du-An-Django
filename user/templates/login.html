@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="col-sm-4">
+  <div class="login-form">
+    <h2>Login to your account</h2>
+
+    <form method="POST">
+      {% csrf_token %} {{ form.non_field_errors }}
+
+      <label>Username:</label>
+      {{ form.username }} {{ form.username.errors }}
+
+      <label>Password:</label>
+      {{ form.password }} {{ form.password.errors }}
+
+      <span>
+        <input type="checkbox" class="checkbox" />
+        Keep me signed in
+      </span>
+
+      <button type="submit" class="btn btn-default">Login</button>
+    </form>
+
+    <p>
+      Don't have an account?
+      <a href="{% url 'user_register' %}"> Register here </a>
+    </p>
+  </div>
+</div>
+
+{% endblock %}
