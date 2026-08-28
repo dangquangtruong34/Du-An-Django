@@ -46,17 +46,16 @@
     </div><!--/blog-post-area-->
 
     <div class="rating-area">
-        <ul class="ratings">
-            <li class="rate-this">Rate this item:</li>
-            <li>
-                <i class="fa fa-star color"></i>
-                <i class="fa fa-star color"></i>
-                <i class="fa fa-star color"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-            </li>
-            <li class="color">(6 votes)</li>
-        </ul>
+        <div class="rate">
+            <div class="vote">
+                <div class="star_1 ratings_stars"><input value="1" type="hidden"></div>
+                <div class="star_2 ratings_stars"><input value="2" type="hidden"></div>
+                <div class="star_3 ratings_stars"><input value="3" type="hidden"></div>
+                <div class="star_4 ratings_stars"><input value="4" type="hidden"></div>
+                <div class="star_5 ratings_stars"><input value="5" type="hidden"></div>
+                <span class="rate-np">{{ avg_rate }}</span>
+            </div> 
+        </div>
         <ul class="tag">
             <li>TAG:</li>
             <li><a class="color" href="">Pink <span>/</span></a></li>
@@ -222,4 +221,75 @@
         </div>
     </div><!--/Repaly Box-->
 </div>
+
+<script>
+    $(document).ready(function(){
+
+        var isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+        var isRated = "{{ user_rate|yesno:'true,false' }}" === "true";
+        var avgRate = parseFloat("{{ avg_rate }}");
+
+        $('.ratings_stars').each(function () {
+            var starValue = parseInt(
+                $(this).find('input').val()
+            );
+            if (starValue <= avgRate) {
+                $(this).addClass('ratings_over');
+            }
+        });
+        //vote
+        
+        $('.ratings_stars').hover(
+            // Handles the mouseover
+            function() {
+                $(this).prevAll().andSelf().addClass('ratings_hover');
+                // $(this).nextAll().removeClass('ratings_vote'); 
+            },
+            function() {
+                $(this).prevAll().andSelf().removeClass('ratings_hover');
+                // set_votes($(this).parent());
+            }
+        );
+    
+
+        $('.ratings_stars').click(function(){
+            if (!isAuthenticated) {
+                alert("Bạn chưa đăng nhập. Vui lòng đăng nhập để đánh giá.");
+                return;
+            }
+
+            if (isRated) {
+                alert("Bạn đã đánh giá bài viết này rồi.");
+                return;
+            }
+    
+            var rateVal =  $(this).find("input").val();
+                
+            $.ajax({
+                type: "POST",
+                url: "{% url 'blog_rate' %}",
+                headers: {
+                    "content-type" : "application/x-www-form-urlencoded",
+                    "X-CSRFToken" : "{{ csrf_token }}"
+                },
+                data: {
+                    blog_id: "{{ blog.id }}",
+                    rate: rateVal
+                },
+
+                success: function (data) {
+                    if(data.success){
+                        alert( data.message );
+                    }else{
+                        alert( data.error )
+                    }
+                },
+
+                error: function () {
+                    alert("Có lỗi xảy ra khi gửi đánh giá.");
+                }
+            }); 
+        });
+    });
+</script>
 {% endblock %}
